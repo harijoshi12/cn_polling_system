@@ -19,11 +19,13 @@ export const deleteOption = async (req, res, next) => {
       return next(new ApiError("Cannot delete option with votes", 400));
     }
 
+    // Remove the option from the associated question
     await Question.findByIdAndUpdate(option.question, {
       $pull: { options: option._id },
     });
 
-    await option.remove();
+    // Delete the option
+    await Option.findByIdAndDelete(option._id);
 
     res.status(204).json({
       status: "success",
