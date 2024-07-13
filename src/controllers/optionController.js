@@ -44,13 +44,16 @@ export const deleteOption = async (req, res, next) => {
  */
 export const addVote = async (req, res, next) => {
   try {
-    const option = await Option.findById(req.params.id);
+    const option = await Option.findByIdAndUpdate(
+      req.params.id,
+      {
+        $inc: { votes: 1 },
+      },
+      { new: true, runValidators: true }
+    );
     if (!option) {
       return next(new ApiError("Option not found", 404));
     }
-
-    option.votes += 1;
-    await option.save();
 
     res.status(200).json({
       status: "success",
